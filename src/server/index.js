@@ -75,6 +75,12 @@ app.post('/api/sendToDiscord', async (req, res) => {
     }
 });
 
+app.post('/api/tabChange', (req, res) => {
+    const { message } = req.body;
+    console.log('Tab change detected:', message);
+    res.json({ message: 'Tab change received successfully' });
+  });
+
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);
 });
