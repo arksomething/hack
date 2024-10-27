@@ -8,6 +8,7 @@ const CaptureHTML = () => {
     const [isTracking, setIsTracking] = useState(false);
     const [intervalId, setIntervalId] = useState(null);
 
+    
     const captureText = () => {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             if (tabs.length > 0) {
@@ -34,30 +35,21 @@ const CaptureHTML = () => {
         });
     };
 
+
     const startLoggingTimestamps = () => {
         if (intervalId) clearInterval(intervalId);
         const id = setInterval(() => {
-            const timestamp = new Date().toISOString();
-            console.log("Logging timestamp:", timestamp);
-            fetch('http://localhost:3000/api/logTimestamp', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ timestamp }),
-            })
-            .then(response => response.json())
-            .then(data => console.log('Timestamp logged:', data))
-            .catch(error => console.error('Error logging timestamp:', error));
-        }, 30000);
+            captureText(); // Capture text every 10 seconds
+        }, 5000); // 5 seconds
         setIntervalId(id);
     };
+
 
     const toggleTracking = () => {
         const newTrackingState = !isTracking;
         setIsTracking(newTrackingState);
-        chrome.runtime.sendMessage({ action: 'toggleTracking', isTracking: newTrackingState });
-    
+        chrome.storage.local.set({ isTracking: newTrackingState }); // Persist state
+
         if (newTrackingState) {
             startLoggingTimestamps();
         } else if (intervalId) {
