@@ -1,6 +1,7 @@
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
+import express from 'express';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import { explainTextWithOpenAI } from '../api/openAiApi.js';
 
 const app = express();
 const port = 3000;
@@ -15,9 +16,19 @@ app.post('/api/saveText', (req, res) => {
     res.json({ message: 'Text received successfully' });
 });
 
+app.post('/api/explainText', async (req, res) => {
+    const { text } = req.body;
+    try {
+        const explanation = await explainTextWithOpenAI(text);
+        console.log('OpenAI summarization successful:', explanation);
+        res.json({ explanation });
+    } catch (error) {
+        console.error("Error explaining text:", error);
+        res.status(500).json({ error: "Error explaining text" });
+    }
+});
+
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);
 });
-
-
 

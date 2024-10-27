@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { sendTextToServer } from './api/serverApi';
+import { sendTextToServer, getExplanationFromOpenAI } from './api/serverApi';
 
 const CaptureHTML = () => {
     const [text, setText] = useState('');
+    const [explanation, setExplanation] = useState('');
     const [error, setError] = useState('');
 
     const captureText = () => {
@@ -34,9 +35,12 @@ const CaptureHTML = () => {
         try {
             await sendTextToServer(capturedText);
             console.log("Text sent to server successfully");
+            const explanationText = await getExplanationFromOpenAI(capturedText);
+            console.log("Received explanation:", explanationText);
+            setExplanation(explanationText);
         } catch (error) {
-            console.error("Error sending text to server:", error);
-            setError("Error sending text to server: " + error.message);
+            console.error("Error processing text:", error);
+            setError("Error processing text: " + error.message);
         }
     };
 
@@ -47,6 +51,14 @@ const CaptureHTML = () => {
             <div style={{ whiteSpace: 'pre-wrap', marginTop: '10px', border: '1px solid #ccc', padding: '5px', maxHeight: '150px', overflowY: 'auto' }}>
                 {text}
             </div>
+            {explanation && (
+                <div style={{ marginTop: '10px' }}>
+                    <h3>Explanation:</h3>
+                    <div style={{ whiteSpace: 'pre-wrap', border: '1px solid #ccc', padding: '5px', maxHeight: '150px', overflowY: 'auto' }}>
+                        {explanation}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
