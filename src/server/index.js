@@ -81,6 +81,14 @@ app.post('/api/tabChange', (req, res) => {
     res.json({ message: 'Tab change received successfully' });
   });
 
+  app.post('/api/logTimestamp', (req, res) => {
+    const { timestamp } = req.body;
+    console.log('Timestamp received:', timestamp);
+    // Here you can save the timestamp to a database or file
+    res.json({ message: 'Timestamp logged successfully' });
+});
+
+
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);
 });

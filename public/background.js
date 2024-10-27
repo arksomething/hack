@@ -2,27 +2,27 @@ let isMessagingActive = false;
 let isTracking = false;
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'toggleTracking') {
-    isTracking = request.isTracking;
-    console.log('Tracking ' + (isTracking ? 'enabled' : 'disabled'));
-    sendResponse({ success: true, isTracking });
-  }
-  return true;
-});
-
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (isTracking && changeInfo.status === 'complete') {
-    sendTabChangeToServer('Tab updated: ' + tab.url);
-  }
-});
-
-chrome.tabs.onActivated.addListener((activeInfo) => {
-  if (isTracking) {
-    chrome.tabs.get(activeInfo.tabId, (tab) => {
-      sendTabChangeToServer('Tab activated: ' + tab.url);
-    });
-  }
-});
+    if (request.action === "getText") {
+      try {
+        const textContent = document.body.innerText || document.body.textContent;
+        
+        if (textContent && textContent.trim().length > 0) {
+          console.log("Text content captured successfully");
+          sendResponse({ success: true, text: textContent });
+        } else {
+          console.log("No visible text found on the page");
+          sendResponse({ success: false, error: "No visible text found on the page" });
+        }
+      } catch (error) {
+        console.error("Error capturing text:", error);
+        sendResponse({ success: false, error: "Error capturing text: " + error.message });
+      }
+    } else {
+      console.log("Unknown action received");
+      sendResponse({ success: false, error: "Unknown action" });
+    }
+    return true; // Keeps the message channel open for asynchronous response
+  });
 
 function sendTabChangeToServer(message) {
   fetch('http://localhost:3000/api/tabChange', {

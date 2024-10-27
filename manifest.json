@@ -1,15 +1,22 @@
 {
     "manifest_version": 3,
-    "name": "Minimal Manifest",
-    "version": "1.0.0",
-    "description": "A basic example extension with only required keys",
-    "permissions": ["scripting", "activeTab"],
-    "icons": {
-        "48": "assets/Frame2.png",
-        "128": "assets/Frame1.png"
-    },
+    "name": "Text Capture Extension",
+    "version": "1.0",
+    "permissions": ["activeTab", "tabs", "http://localhost:3000/*"],
     "action": {
-        "default_popup": "index.html",
-        "default_title": "React Chrome Extension"
-    }
+        "default_popup": "index.html"
+    },
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["content.js"]
+        }
+    ],
+    "web_accessible_resources": [{
+        "resources": ["index.html"],
+        "matches": ["<all_urls>"]
+    }]
 }

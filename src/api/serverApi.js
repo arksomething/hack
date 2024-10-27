@@ -48,3 +48,25 @@ export const getExplanationFromOpenAI = async (text) => {
         throw error;
     }
 };
+
+export const sendToDiscord = async (message) => {
+    try {
+        const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+        await client.login(process.env.DISCORD_TOKEN);
+
+        const channel = await client.channels.fetch(process.env.DISCORD_CHANNEL_ID);
+        if (channel && channel.isTextBased()) {
+            await channel.send(message);
+            console.log('Message sent to Discord successfully');
+            return { success: true };
+        } else {
+            throw new Error('Invalid Discord channel');
+        }
+    } catch (error) {
+        console.error("Error sending message to Discord:", error);
+        throw error;
+    } finally {
+        // Destroy the client to close the connection
+        client.destroy();
+    }
+};
