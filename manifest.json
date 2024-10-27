@@ -3,8 +3,13 @@
     "name": "Minimal Manifest",
     "version": "1.0.0",
     "description": "A basic example extension with only required keys",
+    "permissions": ["scripting", "activeTab"],
     "icons": {
         "48": "assets/Frame2.png",
         "128": "assets/Frame1.png"
+    },
+    "action": {
+        "default_popup": "index.html",
+        "default_title": "React Chrome Extension"
     }
 }
