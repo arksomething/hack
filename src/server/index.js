@@ -110,6 +110,7 @@ app.post('/api/explainText', async (req, res) => {
 
 app.post('/api/sendToDiscord', async (req, res) => {
     const { message } = req.body;
+    console.log(message)
     try {
         const result = await sendToDiscord(message);
         res.json(result);
