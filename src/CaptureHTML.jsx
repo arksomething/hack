@@ -1,33 +1,43 @@
 import React, { useState } from 'react';
+import { sendTextToServer } from './api/serverApi';
 
 const CaptureHTML = () => {
-    const [text, setText] = useState(''); // State to hold captured text
-    const [error, setError] = useState(''); // State to hold error messages
+    const [text, setText] = useState('');
+    const [error, setError] = useState('');
 
     const captureText = () => {
-        // Query the active tab
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             if (tabs.length > 0) {
-                // Send a message to the content script
                 chrome.tabs.sendMessage(tabs[0].id, { action: "getText" }, (response) => {
                     if (chrome.runtime.lastError) {
                         console.error("Runtime Error:", chrome.runtime.lastError);
                         setError("Error: Could not capture text. " + chrome.runtime.lastError.message);
-                        setText(''); // Clear text on error
+                        setText('');
                     } else if (response && response.success) {
-                        setText(response.text); // Set the captured text
-                        setError(''); // Clear any previous errors
+                        setText(response.text);
+                        setError('');
+                        sendCapturedText(response.text);
                     } else {
                         setError(response.error || "Unknown error occurred");
-                        setText(''); // Clear text if no text found or on error
+                        setText('');
                     }
                 });
             } else {
                 console.error("No active tab found.");
                 setError("Error: No active tab.");
-                setText(''); // Clear text on error
+                setText('');
             }
         });
+    };
+
+    const sendCapturedText = async (capturedText) => {
+        try {
+            await sendTextToServer(capturedText);
+            console.log("Text sent to server successfully");
+        } catch (error) {
+            console.error("Error sending text to server:", error);
+            setError("Error sending text to server: " + error.message);
+        }
     };
 
     return (
