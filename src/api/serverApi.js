@@ -48,3 +48,26 @@ export const getExplanationFromOpenAI = async (text) => {
         throw error;
     }
 };
+
+export const sendExplanationToDiscord = async (explanation) => {
+    try {
+        const response = await fetch(`${SERVER_URL}/api/sendToDiscord`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message: explanation }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Sent to Discord:', data);
+        return data;
+    } catch (error) {
+        console.error('Error sending to Discord:', error);
+        throw error;
+    }
+};

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { sendTextToServer, getExplanationFromOpenAI } from './api/serverApi';
+import { sendTextToServer, getExplanationFromOpenAI, sendExplanationToDiscord } from './api/serverApi';
 
 const CaptureHTML = () => {
     const [text, setText] = useState('');
@@ -38,11 +38,14 @@ const CaptureHTML = () => {
             const explanationText = await getExplanationFromOpenAI(capturedText);
             console.log("Received explanation:", explanationText);
             setExplanation(explanationText);
+            await sendExplanationToDiscord(explanationText);
+            console.log("Explanation sent to Discord successfully");
         } catch (error) {
             console.error("Error processing text:", error);
             setError("Error processing text: " + error.message);
         }
     };
+
 
     return (
         <div style={{ padding: '10px', width: '300px' }}>
