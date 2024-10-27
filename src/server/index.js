@@ -5,8 +5,9 @@ import { Client, GatewayIntentBits } from 'discord.js';
 import dotenv from 'dotenv';
 import { explainTextWithOpenAI } from '../api/openAiApi.js';
 import axios from 'axios';
+import { sendToOpenAI } from '../services/openAiService.js';
 
-// Load environment variables
+
 dotenv.config();
 
 const app = express({ limit: '100mb' });
@@ -34,6 +35,9 @@ client.on('messageCreate', async message => {
 
   if (message.content[0] === '!') {
     console.log("Command received:", message.content);
+
+    // Add the user's message to the conversation history
+    addMessage('user', userMessage);
 
     try {
       const response = await axios.post('https://api.openai.com/v1/chat/completions', {
