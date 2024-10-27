@@ -3,7 +3,7 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
     chrome.tabs.get(activeInfo.tabId, (tab) => {
       if (tab) {
         const message = `Tab activated: ${tab.url}`;
-        console.log(message);
+        console.log('Sending message to server:', message);
 
         // Send the message to your server
         fetch('http://localhost:3000/api/tabChange', {
@@ -16,6 +16,8 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
         .then(response => response.json())
         .then(data => console.log('Server response:', data))
         .catch(error => console.error('Error sending tab change to server:', error));
+      } else {
+        console.error('Failed to get tab information');
       }
     });
-  });
+});

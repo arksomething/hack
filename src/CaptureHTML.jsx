@@ -36,13 +36,22 @@ const CaptureHTML = () => {
     };
 
 
-    const startLoggingTimestamps = () => {
-        if (intervalId) clearInterval(intervalId);
-        const id = setInterval(() => {
-            captureText(); // Capture text every 10 seconds
-        }, 5000); // 5 seconds
-        setIntervalId(id);
-    };
+ const startLoggingTimestamps = () => {
+    if (intervalId) clearInterval(intervalId);
+    const id = setInterval(() => {
+        fetch('http://localhost:3000/api/logTimestamp', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ timestamp: "Hello World" }),
+        })
+        .then(response => response.json())
+        .then(data => console.log('Server response:', data))
+        .catch(error => console.error('Error logging to server:', error));
+    }, 5000); // 5 seconds
+    setIntervalId(id);
+};
 
 
     const toggleTracking = () => {
