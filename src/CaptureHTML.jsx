@@ -12,14 +12,14 @@ const CaptureHTML = () => {
                 chrome.tabs.sendMessage(tabs[0].id, { action: "getText" }, (response) => {
                     if (chrome.runtime.lastError) {
                         console.error("Runtime Error:", chrome.runtime.lastError);
-                        setError("Error: Could not capture text.");
+                        setError("Error: Could not capture text. " + chrome.runtime.lastError.message);
                         setText(''); // Clear text on error
-                    } else if (response && response.text) {
+                    } else if (response && response.success) {
                         setText(response.text); // Set the captured text
                         setError(''); // Clear any previous errors
                     } else {
-                        setError("No text found.");
-                        setText(''); // Clear text if no text found
+                        setError(response.error || "Unknown error occurred");
+                        setText(''); // Clear text if no text found or on error
                     }
                 });
             } else {
