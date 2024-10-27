@@ -26,7 +26,7 @@ if (!OPENAI_API_KEY) {
 export async function explainTextWithOpenAI(text) {
     try {
         const classification = await axios.post('https://api.openai.com/v1/chat/completions', {
-            model: "gpt-3.5-turbo",
+            model: "gpt-4o",
             messages: [
                 {
                     role: "system",
@@ -52,7 +52,7 @@ export async function explainTextWithOpenAI(text) {
         console.log((c in prompts) ? prompts[c] : prompts['other']);
 
         const content = await axios.post('https://api.openai.com/v1/chat/completions', {
-            model: "gpt-3.5-turbo",
+            model: "gpt-4o",
             messages: [
                 {
                     role: "system",
