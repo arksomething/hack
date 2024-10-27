@@ -38,6 +38,17 @@ const CaptureHTML = () => {
             const explanationText = await getExplanationFromOpenAI(capturedText);
             console.log("Received explanation:", explanationText);
             setExplanation(explanationText);
+    
+            // Send the explanation to Discord
+            const discordResponse = await fetch('http://localhost:3000/api/sendToDiscord', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: explanationText }),
+            });
+            const discordResult = await discordResponse.json();
+            console.log("Discord message sent:", discordResult);
         } catch (error) {
             console.error("Error processing text:", error);
             setError("Error processing text: " + error.message);
