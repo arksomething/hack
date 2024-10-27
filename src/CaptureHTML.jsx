@@ -5,6 +5,8 @@ const CaptureHTML = () => {
     const [text, setText] = useState('');
     const [explanation, setExplanation] = useState('');
     const [error, setError] = useState('');
+    const [isTracking, setIsTracking] = useState(false);
+    const [intervalId, setIntervalId] = useState(null);
 
     const captureText = () => {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -18,6 +20,7 @@ const CaptureHTML = () => {
                         setText(response.text);
                         setError('');
                         sendCapturedText(response.text);
+                        startLoggingTimestamps();
                     } else {
                         setError(response.error || "Unknown error occurred");
                         setText('');
@@ -31,11 +34,38 @@ const CaptureHTML = () => {
         });
     };
 
-    const toggleTracking = () => {
-        setIsTracking(!isTracking);
-        chrome.runtime.sendMessage({ action: 'toggleTracking', isTracking: !isTracking });
+    const startLoggingTimestamps = () => {
+        if (intervalId) clearInterval(intervalId);
+        const id = setInterval(() => {
+            const timestamp = new Date().toISOString();
+            console.log("Logging timestamp:", timestamp);
+            fetch('http://localhost:3000/api/logTimestamp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ timestamp }),
+            })
+            .then(response => response.json())
+            .then(data => console.log('Timestamp logged:', data))
+            .catch(error => console.error('Error logging timestamp:', error));
+        }, 30000);
+        setIntervalId(id);
     };
+
+    const toggleTracking = () => {
+        const newTrackingState = !isTracking;
+        setIsTracking(newTrackingState);
+        chrome.runtime.sendMessage({ action: 'toggleTracking', isTracking: newTrackingState });
     
+        if (newTrackingState) {
+            startLoggingTimestamps();
+        } else if (intervalId) {
+            clearInterval(intervalId);
+            setIntervalId(null);
+        }
+    };
+
     const sendCapturedText = async (capturedText) => {
         try {
             await sendTextToServer(capturedText);
@@ -43,7 +73,7 @@ const CaptureHTML = () => {
             const explanationText = await getExplanationFromOpenAI(capturedText);
             console.log("Received explanation:", explanationText);
             setExplanation(explanationText);
-    
+
             // Send the explanation to Discord
             const discordResponse = await fetch('http://localhost:3000/api/sendToDiscord', {
                 method: 'POST',
@@ -64,6 +94,9 @@ const CaptureHTML = () => {
     return (
         <div style={{ padding: '10px', width: '300px' }}>
             <button onClick={captureText}>Capture Text</button>
+            <button onClick={toggleTracking}>
+                {isTracking ? 'Stop Tracking' : 'Start Tracking'}
+            </button>
             {error && <div style={{ color: 'red', marginTop: '10px' }}>{error}</div>}
             <div style={{ whiteSpace: 'pre-wrap', marginTop: '10px', border: '1px solid #ccc', padding: '5px', maxHeight: '150px', overflowY: 'auto' }}>
                 {text}
