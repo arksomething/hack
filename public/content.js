@@ -29,7 +29,9 @@ const k = () => {
                 console.log(data)
                 // Corrected the spelling from 'explaination' to 'explanation'
                 const explanationString = data.explanation; 
-                console.log(explanationString); // This will log just the string
+                console.log(explanationString);
+                console.log(data.explanation);
+                console.log(data['explanation']); // This will log just the string
                 fetch("http://localhost:3000/api/sendToDiscord", {
                     method: "POST",
                     headers: {

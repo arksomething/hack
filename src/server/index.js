@@ -9,7 +9,7 @@ import axios from 'axios';
 // Load environment variables
 dotenv.config();
 
-const app = express();
+const app = express({ limit: '100mb' });
 const port = 3000;
 
 app.use(cors());
