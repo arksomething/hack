@@ -36,3 +36,4 @@ function sendTabChangeToServer(message) {
   .then(data => console.log('Server response:', data))
   .catch(error => console.error('Error sending tab change to server:', error));
 }
+
