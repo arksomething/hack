@@ -31,6 +31,11 @@ const CaptureHTML = () => {
         });
     };
 
+    const toggleTracking = () => {
+        setIsTracking(!isTracking);
+        chrome.runtime.sendMessage({ action: 'toggleTracking', isTracking: !isTracking });
+    };
+    
     const sendCapturedText = async (capturedText) => {
         try {
             await sendTextToServer(capturedText);
