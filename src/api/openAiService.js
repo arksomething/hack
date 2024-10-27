@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { addMessage, getHistory } from '../services/conversationService';
+import { addMessage, getHistory } from './conversationService';
 
 export async function sendToOpenAI(userMessage) {
   try {
